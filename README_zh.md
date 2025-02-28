@@ -5,7 +5,7 @@
 [![GitHub contributors](https://img.shields.io/github/contributors/hiyouga/LLaMA-Factory?color=orange)](https://github.com/hiyouga/LLaMA-Factory/graphs/contributors)
 [![GitHub workflow](https://github.com/hiyouga/LLaMA-Factory/actions/workflows/tests.yml/badge.svg)](https://github.com/hiyouga/LLaMA-Factory/actions/workflows/tests.yml)
 [![PyPI](https://img.shields.io/pypi/v/llamafactory)](https://pypi.org/project/llamafactory/)
-[![Citation](https://img.shields.io/badge/citation-270-green)](https://scholar.google.com/scholar?cites=12620864006390196564)
+[![Citation](https://img.shields.io/badge/citation-319-green)](https://scholar.google.com/scholar?cites=12620864006390196564)
 [![GitHub pull request](https://img.shields.io/badge/PRs-welcome-blue)](https://github.com/hiyouga/LLaMA-Factory/pulls)
 
 [![Twitter](https://img.shields.io/twitter/follow/llamafactory_ai)](https://twitter.com/llamafactory_ai)
@@ -42,7 +42,7 @@ https://github.com/user-attachments/assets/e6ce34b0-52d5-4f3e-a830-592106c4c272
 - **框架文档**：https://llamafactory.readthedocs.io/zh-cn/latest/
 - **Colab**：https://colab.research.google.com/drive/1d5KQtbemerlSDSxZIfAaWXhKr30QypiK?usp=sharing
 - **本地机器**：请见[如何使用](#如何使用)
-- **PAI-DSW**：[Llama3 案例](https://gallery.pai-ml.com/#/preview/deepLearning/nlp/llama_factory) | [Qwen2-VL 案例](https://gallery.pai-ml.com/#/preview/deepLearning/nlp/llama_factory_qwen2vl)
+- **PAI-DSW**：[Llama3 案例](https://gallery.pai-ml.com/#/preview/deepLearning/nlp/llama_factory) | [Qwen2-VL 案例](https://gallery.pai-ml.com/#/preview/deepLearning/nlp/llama_factory_qwen2vl) | [DeepSeek-R1-Distill 案例](https://gallery.pai-ml.com/#/preview/deepLearning/nlp/llama_factory_deepseek_r1_distill_7b)
 - **Amazon SageMaker**：[博客](https://aws.amazon.com/cn/blogs/china/a-one-stop-code-free-model-fine-tuning-deployment-platform-based-on-sagemaker-and-llama-factory/)
 
 > [!NOTE]
@@ -108,7 +108,7 @@ https://github.com/user-attachments/assets/e6ce34b0-52d5-4f3e-a830-592106c4c272
 
 ## 更新日志
 
-[25/02/24] 我们宣布开源 **[EasyR1](https://github.com/hiyouga/EasyR1)**，一个高效可扩展的多模态强化学习框架，支持 GRPO 训练。
+[25/02/24] 我们宣布开源 **[EasyR1](https://github.com/hiyouga/EasyR1)**，一个高效可扩展的多模态强化学习框架，支持高效的 GRPO 训练。
 
 [25/02/11] 我们支持了在导出模型时保存 **[Ollama](https://github.com/ollama/ollama)** 配置文件。详细用法请参照 [examples](examples/README_zh.md)。
 
@@ -403,12 +403,14 @@ huggingface-cli login
 | trl          | 0.8.6   | 0.9.6     |
 
 | 可选项       | 至少     | 推荐      |
-| ------------ | ------- | --------- |
-| CUDA         | 11.6    | 12.2      |
-| deepspeed    | 0.10.0  | 0.16.2    |
-| bitsandbytes | 0.39.0  | 0.43.1    |
-| vllm         | 0.4.3   | 0.7.2     |
-| flash-attn   | 2.3.0   | 2.7.2     |
+| -------------- | ------- | -------- |
+| CUDA           | 11.6    | 12.2     |
+| deepspeed      | 0.10.0  | 0.16.2   |
+| bitsandbytes   | 0.39.0  | 0.43.1   |
+| vllm           | 0.4.3   | 0.7.2    |
+| flash-attn     | 2.3.0   | 2.7.2    |
+| habana-*       | 1.19.0  | 1.20.0   |
+| optimum-habana | 1.15    | 1.16.0   |
 
 ### 硬件依赖
 
@@ -542,6 +544,16 @@ pip install .
 
 </details>
 
+<details><summary>HPU 用户指南</summary>
+
+请按照 [Intel Gaudi](https://docs.habana.ai/en/latest/Installation_Guide/index.html) 安装指南 中的说明设置您的环境，包括 `$PYTHON` 环境变量。该指南将引导您完成配置系统以在 Gaudi HPU 设备上运行的过程。
+
+要运行 `llamafactory-cli`，请使用 Docker 安装指南 中引用的 Docker 设置。按照提供的说明在 [Docker](https://docs.habana.ai/en/latest/Installation_Guide/Additional_Installation/Docker_Installation.html) 环境中安装 LLaMA-Factory。兼容的 `optimum-habana` 版本在上文中已指定。请注意，大多数 LLaMA-Factory 功能和优化，包括推理、训练（SFT、DPO 等）、LoRA 微调以及使用 DeepSpeed 和 DDP 的分布式训练，均已在 Gaudi HPU 设备上支持。
+
+examples 目录包含各种针对 Gaudi 特定配置的 YAML 和 JSON 配置文件，涵盖训练和推理。这些文件经过优化，可以透明地利用 Gaudi 的性能增强，并且可以通过文件名中包含 gaudi 来识别。在创建自定义配置时，建议使用或修改这些文件，以在 Gaudi HPU 设备上获得更好的性能。
+
+</details>
+
 ### 数据准备
 
 关于数据集文件的格式，请参考 [data/README_zh.md](data/README_zh.md) 的内容。你可以使用 HuggingFace / ModelScope / Modelers 上的数据集或加载本地数据集。
@@ -580,6 +592,14 @@ docker compose up -d
 docker compose exec llamafactory bash
 ```
 
+HPU 用户：
+
+```bash
+cd docker/docker-hpu/
+docker compose up -d
+docker compose exec llamafactory bash
+```
+
 昇腾 NPU 用户：
 
 ```bash
@@ -610,6 +630,43 @@ docker build -f ./docker/docker-cuda/Dockerfile \
     -t llamafactory:latest .
 
 docker run -dit --gpus=all \
+    -v ./hf_cache:/root/.cache/huggingface \
+    -v ./ms_cache:/root/.cache/modelscope \
+    -v ./om_cache:/root/.cache/openmind \
+    -v ./data:/app/data \
+    -v ./output:/app/output \
+    -p 7860:7860 \
+    -p 8000:8000 \
+    --shm-size 16G \
+    --name llamafactory \
+    llamafactory:latest
+
+docker exec -it llamafactory bash
+```
+
+HPU 用户：
+
+```bash
+docker build -f ./docker/docker-hpu/Dockerfile \
+    --build-arg INSTALL_BNB=false \
+    --build-arg INSTALL_VLLM=false \
+    --build-arg INSTALL_DEEPSPEED=false \
+    --build-arg INSTALL_FLASHATTN=false \
+    --build-arg PIP_INDEX=https://pypi.org/simple \
+    --build-arg http_proxy=${http_proxy} \
+    --build-arg https_proxy=${https_proxy} \
+    --build-arg ftp_proxy=${ftp_proxy} \
+    --build-arg no_proxy=${no_proxy:-localhost} \
+    -t llamafactory:latest .
+
+docker run -dit --runtime=habana \
+    --cap-add=sys_nice --cap_drop=net_raw --ipc=host \
+    -e http_proxy=${http_proxy} \
+    -e https_proxy=${https_proxy} \
+    -e ftp_proxy=${ftp_proxy} \
+    -e no_proxy=${no_proxy:-localhost} \
+    -e HABANA_VISIBLE_DEVICES=${HABANA_VISIBLE_DEVICES:-all} \
+    -e OMPI_MCA_btl_vader_single_copy_mechanism=${OMPI_MCA_btl_vader_single_copy_mechanism:-none} \
     -v ./hf_cache:/root/.cache/huggingface \
     -v ./ms_cache:/root/.cache/modelscope \
     -v ./om_cache:/root/.cache/openmind \

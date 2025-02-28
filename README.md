@@ -5,7 +5,7 @@
 [![GitHub contributors](https://img.shields.io/github/contributors/hiyouga/LLaMA-Factory?color=orange)](https://github.com/hiyouga/LLaMA-Factory/graphs/contributors)
 [![GitHub workflow](https://github.com/hiyouga/LLaMA-Factory/actions/workflows/tests.yml/badge.svg)](https://github.com/hiyouga/LLaMA-Factory/actions/workflows/tests.yml)
 [![PyPI](https://img.shields.io/pypi/v/llamafactory)](https://pypi.org/project/llamafactory/)
-[![Citation](https://img.shields.io/badge/citation-270-green)](https://scholar.google.com/scholar?cites=12620864006390196564)
+[![Citation](https://img.shields.io/badge/citation-319-green)](https://scholar.google.com/scholar?cites=12620864006390196564)
 [![GitHub pull request](https://img.shields.io/badge/PRs-welcome-blue)](https://github.com/hiyouga/LLaMA-Factory/pulls)
 
 [![Twitter](https://img.shields.io/twitter/follow/llamafactory_ai)](https://twitter.com/llamafactory_ai)
@@ -40,7 +40,7 @@ Choose your path:
 - **Documentation (WIP)**: https://llamafactory.readthedocs.io/zh-cn/latest/
 - **Colab**: https://colab.research.google.com/drive/1eRTPn37ltBbYsISy9Aw2NuI2Aq5CQrD9?usp=sharing
 - **Local machine**: Please refer to [usage](#getting-started)
-- **PAI-DSW**: [Llama3 Example](https://gallery.pai-ml.com/#/preview/deepLearning/nlp/llama_factory) | [Qwen2-VL Example](https://gallery.pai-ml.com/#/preview/deepLearning/nlp/llama_factory_qwen2vl)
+- **PAI-DSW**: [Llama3 Example](https://gallery.pai-ml.com/#/preview/deepLearning/nlp/llama_factory) | [Qwen2-VL Example](https://gallery.pai-ml.com/#/preview/deepLearning/nlp/llama_factory_qwen2vl) | [DeepSeek-R1-Distill Example](https://gallery.pai-ml.com/#/preview/deepLearning/nlp/llama_factory_deepseek_r1_distill_7b)
 - **Amazon SageMaker**: [Blog](https://aws.amazon.com/cn/blogs/china/a-one-stop-code-free-model-fine-tuning-deployment-platform-based-on-sagemaker-and-llama-factory/)
 
 > [!NOTE]
@@ -106,7 +106,7 @@ Compared to ChatGLM's [P-Tuning](https://github.com/THUDM/ChatGLM2-6B/tree/main/
 
 ## Changelog
 
-[25/02/24] Announcing **[EasyR1](https://github.com/hiyouga/EasyR1)**, an efficient, scalable and multi-modality RL training framework for GRPO training.
+[25/02/24] Announcing **[EasyR1](https://github.com/hiyouga/EasyR1)**, an efficient, scalable and multi-modality RL training framework for efficient GRPO training.
 
 [25/02/11] We supported saving the **[Ollama](https://github.com/ollama/ollama)** modelfile when exporting the model checkpoints. See [examples](examples/README.md) for usage.
 
@@ -400,13 +400,15 @@ huggingface-cli login
 | peft         | 0.11.1  | 0.12.0    |
 | trl          | 0.8.6   | 0.9.6     |
 
-| Optional     | Minimum | Recommend |
-| ------------ | ------- | --------- |
-| CUDA         | 11.6    | 12.2      |
-| deepspeed    | 0.10.0  | 0.16.2    |
-| bitsandbytes | 0.39.0  | 0.43.1    |
-| vllm         | 0.4.3   | 0.7.2     |
-| flash-attn   | 2.3.0   | 2.7.2     |
+| Optional      | Minimum | Recommend |
+| ------------- | ------- | --------- |
+| CUDA          | 11.6    | 12.2      |
+| deepspeed     | 0.10.0  | 0.16.2    |
+| bitsandbytes  | 0.39.0  | 0.43.1    |
+| vllm          | 0.4.3   | 0.7.2     |
+| flash-attn    | 2.3.0   | 2.7.2     |
+| habana-*      | 1.19.0  | 1.20.0    |
+| optimum-habana| 1.15    | 1.16.0    |
 
 ### Hardware Requirement
 
@@ -479,12 +481,12 @@ To install LLaMA Factory on Ascend NPU devices, please upgrade Python to version
 ```bash
 # replace the url according to your CANN version and devices
 # install CANN Toolkit
-wget https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Milan-ASL/Milan-ASL%20V100R001C17SPC701/Ascend-cann-toolkit_8.0.RC1.alpha001_linux-"$(uname -i)".run
-bash Ascend-cann-toolkit_8.0.RC1.alpha001_linux-"$(uname -i)".run --install
+wget https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Milan-ASL/Milan-ASL%20V100R001C20SPC702/Ascend-cann-toolkit_8.0.0.alpha002_linux-"$(uname -i)".run
+bash Ascend-cann-toolkit_8.0.0.alpha002_linux-"$(uname -i)".run --install
 
 # install CANN Kernels
-wget https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Milan-ASL/Milan-ASL%20V100R001C17SPC701/Ascend-cann-kernels-910b_8.0.RC1.alpha001_linux.run
-bash Ascend-cann-kernels-910b_8.0.RC1.alpha001_linux.run --install
+wget https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/Milan-ASL/Milan-ASL%20V100R001C20SPC702/Ascend-cann-kernels-910b_8.0.0.alpha002_linux-"$(uname -i)".run
+bash Ascend-cann-kernels-910b_8.0.0.alpha002_linux-"$(uname -i)".run --install
 
 # set env variables
 source /usr/local/Ascend/ascend-toolkit/set_env.sh
@@ -492,10 +494,10 @@ source /usr/local/Ascend/ascend-toolkit/set_env.sh
 
 | Requirement  | Minimum | Recommend   |
 | ------------ | ------- | ----------- |
-| CANN         | 8.0.RC1 | 8.0.RC1     |
-| torch        | 2.1.0   | 2.1.0       |
-| torch-npu    | 2.1.0   | 2.1.0.post3 |
-| deepspeed    | 0.13.2  | 0.13.2      |
+| CANN         | 8.0.RC1 | 8.0.0.alpha002     |
+| torch        | 2.1.0   | 2.4.0      |
+| torch-npu    | 2.1.0   | 2.4.0.post2 |
+| deepspeed    | 0.13.2  | 0.16.2     |
 
 Remember to use `ASCEND_RT_VISIBLE_DEVICES` instead of `CUDA_VISIBLE_DEVICES` to specify the device to use.
 
@@ -539,6 +541,16 @@ pip install .
 
 </details>
 
+<details><summary>For Gaudi HPU users</summary>
+
+Please follow the instructions in the [Intel Gaudi Installation Guide](https://docs.habana.ai/en/latest/Installation_Guide/index.html) to set up your environment, including the `$PYTHON` environment variable. This guide will walk you through the process of configuring your system to run on Gaudi HPU devices.
+
+To run `llamafactory-cli`, use the Docker setup referenced in the [Docker Installation ](https://docs.habana.ai/en/latest/Installation_Guide/Additional_Installation/Docker_Installation.html) Guide. Follow the instructions provided to install LLaMA-Factory within the Docker environment. Compatible `optimum-habana` releases are specified above. Note that most LLaMA-Factory features and optimizations, including inferencing, training (SFT, DPO, etc.), LoRA fine-tuning, and distributed training with DeepSpeed and DDP, are supported on Gaudi HPU devices.
+
+The examples directory contains various YAML and JSON configuration files tailored for Gaudi-specific configurations with DeepSpeed, covering both training and inference. These files are optimized to transparently leverage Gaudi's performance enhancements and can be identified by the inclusion of `gaudi` in their filenames. When creating custom configurations, it is recommended to use or modify these files to achieve better performance on Gaudi HPU devices.
+
+</details>
+
 ### Data Preparation
 
 Please refer to [data/README.md](data/README.md) for checking the details about the format of dataset files. You can either use datasets on HuggingFace / ModelScope / Modelers hub or load the dataset in local disk.
@@ -577,6 +589,14 @@ docker compose up -d
 docker compose exec llamafactory bash
 ```
 
+For HPU users:
+
+```bash
+cd docker/docker-hpu/
+docker compose up -d
+docker compose exec llamafactory bash
+```
+
 For Ascend NPU users:
 
 ```bash
@@ -607,6 +627,43 @@ docker build -f ./docker/docker-cuda/Dockerfile \
     -t llamafactory:latest .
 
 docker run -dit --gpus=all \
+    -v ./hf_cache:/root/.cache/huggingface \
+    -v ./ms_cache:/root/.cache/modelscope \
+    -v ./om_cache:/root/.cache/openmind \
+    -v ./data:/app/data \
+    -v ./output:/app/output \
+    -p 7860:7860 \
+    -p 8000:8000 \
+    --shm-size 16G \
+    --name llamafactory \
+    llamafactory:latest
+
+docker exec -it llamafactory bash
+```
+
+For HPU users:
+
+```bash
+docker build -f ./docker/docker-hpu/Dockerfile \
+    --build-arg INSTALL_BNB=false \
+    --build-arg INSTALL_VLLM=false \
+    --build-arg INSTALL_DEEPSPEED=false \
+    --build-arg INSTALL_FLASHATTN=false \
+    --build-arg PIP_INDEX=https://pypi.org/simple \
+    --build-arg http_proxy=${http_proxy} \
+    --build-arg https_proxy=${https_proxy} \
+    --build-arg ftp_proxy=${ftp_proxy} \
+    --build-arg no_proxy=${no_proxy:-localhost} \
+    -t llamafactory:latest .
+
+docker run -dit --runtime=habana \
+    --cap-add=sys_nice --cap_drop=net_raw --ipc=host \
+    -e http_proxy=${http_proxy} \
+    -e https_proxy=${https_proxy} \
+    -e ftp_proxy=${ftp_proxy} \
+    -e no_proxy=${no_proxy:-localhost} \
+    -e HABANA_VISIBLE_DEVICES=${HABANA_VISIBLE_DEVICES:-all} \
+    -e OMPI_MCA_btl_vader_single_copy_mechanism=${OMPI_MCA_btl_vader_single_copy_mechanism:-none} \
     -v ./hf_cache:/root/.cache/huggingface \
     -v ./ms_cache:/root/.cache/modelscope \
     -v ./om_cache:/root/.cache/openmind \

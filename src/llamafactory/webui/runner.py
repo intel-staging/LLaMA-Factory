@@ -22,7 +22,7 @@ from transformers.trainer import TRAINING_ARGS_NAME
 from transformers.utils import is_torch_npu_available
 
 from ..extras.constants import LLAMABOARD_CONFIG, PEFT_METHODS, TRAINING_STAGES
-from ..extras.misc import is_gpu_or_npu_available, torch_gc, use_ray
+from ..extras.misc import is_gpu_or_npu_available, is_torch_hpu_available, torch_gc, use_ray
 from ..extras.packages import is_gradio_available
 from .common import (
     DEFAULT_CACHE_DIR,
@@ -111,7 +111,7 @@ class Runner:
                 return ALERTS["err_no_output_dir"][lang]
 
         if not from_preview and not is_gpu_or_npu_available():
-            gr.Warning(ALERTS["warn_no_cuda"][lang])
+            gr.Warning(ALERTS["warn_no_accelerator"][lang])
 
         return ""
 
@@ -289,6 +289,13 @@ class Runner:
             ds_offload = "offload_" if get("train.ds_offload") else ""
             args["deepspeed"] = os.path.join(DEFAULT_CACHE_DIR, f"ds_z{ds_stage}_{ds_offload}config.json")
 
+        # HPU specific args
+        if is_torch_hpu_available():
+            args["use_habana"] = get("top.use_habana") == "True"
+            args["gaudi_config_name"] = get("top.gaudi_config_name")
+            args["use_lazy_mode"] = get("top.use_lazy_mode") == "True"
+            args["use_hpu_graphs"] = get("top.use_hpu_graphs") == "True"
+
         return args
 
     def _parse_eval_args(self, data: Dict["Component", Any]) -> Dict[str, Any]:
@@ -342,6 +349,13 @@ class Runner:
             args["quantization_bit"] = int(get("top.quantization_bit"))
             args["quantization_method"] = get("top.quantization_method")
             args["double_quantization"] = not is_torch_npu_available()
+
+        # HPU specific args
+        if is_torch_hpu_available():
+            args["use_habana"] = get("top.use_habana") == "True"
+            args["gaudi_config_name"] = get("top.gaudi_config_name")
+            args["use_lazy_mode"] = get("top.use_lazy_mode") == "True"
+            args["use_hpu_graphs"] = get("top.use_hpu_graphs") == "True"
 
         return args
 
@@ -423,6 +437,7 @@ class Runner:
         output_box = self.manager.get_elem_by_id("{}.output_box".format("train" if self.do_train else "eval"))
         progress_bar = self.manager.get_elem_by_id("{}.progress_bar".format("train" if self.do_train else "eval"))
         loss_viewer = self.manager.get_elem_by_id("train.loss_viewer") if self.do_train else None
+        swanlab_link = self.manager.get_elem_by_id("train.swanlab_link") if self.do_train else None
 
         running_log = ""
         while self.trainer is not None:
@@ -432,16 +447,18 @@ class Runner:
                     progress_bar: gr.Slider(visible=False),
                 }
             else:
-                running_log, running_progress, running_loss = get_trainer_info(output_path, self.do_train)
+                running_log, running_progress, running_info = get_trainer_info(lang, output_path, self.do_train)
                 return_dict = {
                     output_box: running_log,
                     progress_bar: running_progress,
                 }
-                if running_loss is not None:
-                    return_dict[loss_viewer] = running_loss
+                if "loss_viewer" in running_info:
+                    return_dict[loss_viewer] = running_info["loss_viewer"]
+
+                if "swanlab_link" in running_info:
+                    return_dict[swanlab_link] = running_info["swanlab_link"]
 
                 yield return_dict
-
             try:
                 self.trainer.wait(2)
                 self.trainer = None

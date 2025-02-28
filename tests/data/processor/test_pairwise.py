@@ -21,6 +21,7 @@ from datasets import load_dataset
 from transformers import AutoTokenizer
 
 from llamafactory.extras.constants import IGNORE_INDEX
+from llamafactory.extras.misc import is_torch_hpu_available
 from llamafactory.train.test_utils import load_train_dataset
 
 
@@ -42,6 +43,15 @@ TRAIN_ARGS = {
     "overwrite_output_dir": True,
     "fp16": True,
 }
+
+if is_torch_hpu_available():
+    TRAIN_ARGS.update(
+        {
+            "use_habana": True,
+            "fp16": False,
+            "bf16": True,
+        }
+    )
 
 
 def _convert_sharegpt_to_openai(messages: List[Dict[str, str]]) -> List[Dict[str, str]]:
